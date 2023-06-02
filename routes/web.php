@@ -4,6 +4,9 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+require(base_path('routes/app/web.php'));
+require(base_path('routes/app/admin.php'));
+require(base_path('routes/app/test.php'));
 /*
 |--------------------------------------------------------------------------
 | Web Routes
