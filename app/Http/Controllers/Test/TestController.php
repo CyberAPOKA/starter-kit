@@ -12,4 +12,14 @@ class TestController extends Controller
     {
         return Inertia::render('Test/DataTable');
     }
+
+    public function darkMode()
+    {
+        return Inertia::render('Test/DarkMode');
+    }
+
+    public function daisyui()
+    {
+        return Inertia::render('Test/Daisyui');
+    }
 }
