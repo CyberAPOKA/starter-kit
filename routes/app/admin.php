@@ -18,6 +18,8 @@ Route::namespace('admin')->prefix('admin')->group(function () {
 
         Route::get('/', [DashboardController::class, 'index'])->name('admin.index');
 
-        Route::get('/user/{id}', [DashboardController::class, 'user'])->name('admin.user');
+        Route::get('user/{id}', [DashboardController::class, 'user'])->name('admin.user');
+
+        Route::post('user/update/{id}', [DashboardController::class, 'userUpdate'])->name('admin.user.update');
     });
 });

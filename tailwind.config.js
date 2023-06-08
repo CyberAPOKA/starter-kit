@@ -17,16 +17,16 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
-        colors:{
-            'blue': '#1d9bf0',
-            'yellow': '#ffd400',
-            'pink': '#f91880',
-            'purple': '#7856ff',
-            'orange': '#ff7a00',
-            'green': '#00ba7c',
-            'dark': '#15202b',
-            'superdark': '#000000'
-            },
+        // colors:{
+        //     'blue': '#1d9bf0',
+        //     'yellow': '#ffd400',
+        //     'pink': '#f91880',
+        //     'purple': '#7856ff',
+        //     'orange': '#ff7a00',
+        //     'green': '#00ba7c',
+        //     'dark': '#15202b',
+        //     'superdark': '#000000'
+        //     },
         },
     },
     daisyui: {

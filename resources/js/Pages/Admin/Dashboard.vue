@@ -1,6 +1,5 @@
 <template>
   <Sidebar></Sidebar>
-
   <div class="p-4 sm:ml-64">
     <div
       class="p-4 my-10 md:mx-10 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700"
@@ -131,6 +130,7 @@
                 <button
                   type="button"
                   class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                  @click="closeModal"
                 >
                   <svg
                     aria-hidden="true"
@@ -149,32 +149,55 @@
                 </button>
               </div>
               <!-- Modal body -->
-              <div class="p-6 space-y-6">
-                <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                  <h2>{{ selectedUser.email }}</h2>
-          
-                </p>
-                <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                  <p>{{ selectedUser.profile?.name }}</p>
-                </p>
-              </div>
-              <!-- Modal footer -->
-              <div
-                class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600"
-              >
-                <button
-                  type="button"
-                  class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              <Form @submit="submit(selectedUser)">
+                <div class="p-6 space-y-6">
+                  <InputLabel
+                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    for="email"
+                    >Email</InputLabel
+                  >
+                  <Field
+                    type="email"
+                    id="email"
+                    name="email"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    v-model="selectedUser.email"
+                  />
+                  <ErrorMessage name="email" />
+                </div>
+                <div class="p-6 space-y-6">
+                  <InputLabel
+                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    for="name"
+                    >Nome</InputLabel
+                  >
+                  <Field
+                    type="text"
+                    id="name"
+                    name="name"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    v-model="selectedUser.profile.name"
+                  />
+                  <ErrorMessage name="name" />
+                </div>
+                <div
+                  class="flex justify-between items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600"
                 >
-                  I accept
-                </button>
-                <button
-                  type="button"
-                  class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
-                >
-                  Decline
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                    @click="closeModal"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                  >
+                    Salvar
+                  </button>
+                </div>
+              </Form>
             </div>
           </div>
         </div>
@@ -196,7 +219,13 @@ import Sidebar from "@/Pages/Admin/Layout/Sidebar.vue";
 import { TailwindPagination } from "laravel-vue-pagination";
 import { ref, watchEffect, reactive, onMounted } from "vue";
 import { createStore } from "vuex";
-import { Link } from "@inertiajs/vue3";
+import { Head, Link, useForm } from "@inertiajs/vue3";
+import InputLabel from "@/Components/InputLabel.vue";
+import { Field, Form, ErrorMessage } from "vee-validate";
+import { useToast } from "vue-toast-notification";
+import "vue-toast-notification/dist/theme-sugar.css";
+
+const toast = useToast();
 
 const users = ref({ data: [] });
 const searchEmail = ref(null);
@@ -267,6 +296,46 @@ watchEffect(() => {
   store.commit("setFilters", filters);
   getUsers();
 });
+
+// const submit = (user) => {
+//   const form = useForm({
+//     email: user.email,
+//     name: user.profile.name,
+//   });
+//   form
+//     .post(route("admin.user.update", { id: user.id }))
+//     .then((response) => {
+//       console.log(response);
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//     });
+// };
+
+const submit = (user) => {
+  var data = new FormData();
+
+  data.append("email", user.email);
+  data.append("name", user.profile.name);
+
+  axios
+    .post(route("admin.user.update", { id: user.id }), data)
+    .then((response) => {
+      console.log(response);
+      closeModal();
+      toast.success("Dados salvos!", {
+        position: "top-right",
+        duration: "5000",
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      toast.error("Erro! Email e/ou Senha Inválido(s)!", {
+        position: "top-right",
+        duration: "5000",
+      });
+    });
+};
 </script>
 <style scoped>
 .modal-test {
@@ -277,9 +346,5 @@ watchEffect(() => {
   background-color: white;
   padding: 20px;
   border-radius: 4px;
-}
-
-button {
-  margin-top: 10px;
 }
 </style>

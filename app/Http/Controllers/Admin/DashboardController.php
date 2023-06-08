@@ -120,4 +120,24 @@ class DashboardController extends Controller
             'result_date' => $request->input('result_date')
         ]);
     }
+
+    public function userUpdate(Request $request, $id)
+    {
+        // dd($request, $id);
+        try {
+            $user = User::findOrFail($id);
+
+            $user->update([
+                'email' => $request->input('email')
+            ]);
+
+            $user->profile->update([
+                'name' => $request->input('name')
+            ]);
+
+            return response()->json(['message' => 'Usuário atualizado com sucesso']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Erro ao atualizar usuário: ' . $e->getMessage()], 500);
+        }
+    }
 }
